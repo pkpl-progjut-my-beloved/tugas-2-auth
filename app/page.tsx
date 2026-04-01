@@ -1,6 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
 import LogoutButton from '@/app/components/LogoutButton'
 import Link from 'next/link'
 import UserAvatar from '@/app/components/UserAvatar'
@@ -9,9 +8,8 @@ export default async function HomePage() {
   const cookieStore = await cookies()
   const supabase = createClient(cookieStore)
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
 
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+  const { data: profile } = user ? await supabase.from('profiles').select('*').eq('id', user.id).single() : { data: null }
   const { data: settings } = await supabase.from('web_settings').select('*').single()
 
   const isAdmin = profile?.role === 'SUPER_ADMIN' || profile?.role === 'ADMIN'
@@ -25,12 +23,9 @@ export default async function HomePage() {
 
   const getRoleStyle = (role: string) => {
     switch (role) {
-      case 'SUPER_ADMIN':
-        return 'text-purple-400 border-purple-400/30 bg-purple-400/5'
-      case 'ADMIN':
-        return 'text-blue-400 border-blue-400/30 bg-blue-400/5'
-      default:
-        return 'text-[#8b949e] border-[#30363d] bg-[#161b22]'
+      case 'SUPER_ADMIN': return 'text-purple-400 border-purple-400/30 bg-purple-400/5'
+      case 'ADMIN': return 'text-blue-400 border-blue-400/30 bg-blue-400/5'
+      default: return 'text-[#8b949e] border-[#30363d] bg-[#161b22]'
     }
   }
 
@@ -39,7 +34,7 @@ export default async function HomePage() {
       className="min-h-screen text-[#c9d1d9] transition-all duration-700 font-sans"
       style={{
         backgroundColor: '#0d1117',
-        backgroundImage: `radial-gradient(circle at top, ${settings?.primary_color}10, #0d1117)`,
+        backgroundImage: `radial-gradient(circle at top, ${settings?.primary_color || '#58a6ff'}10, #0d1117)`,
       }}
     >
       <nav className="bg-[#161b22] border-b border-[#30363d] py-3 sticky top-0 z-50">
@@ -48,21 +43,29 @@ export default async function HomePage() {
             <span className="font-bold text-[#f0f6fc]">OAuth</span>
           </div>
           <div className="flex gap-6 items-center">
-            {isAdmin && (
+            {user ? (
               <>
-                <Link href="/admin" className="text-[#8b949e] hover:text-[#58a6ff] transition-all font-bold">Admin Panel</Link>
-                <Link href="/settings" className="bg-[#21262d] border border-[#30363d] px-3 py-1.5 rounded-md hover:bg-[#30363d] text-[#f0f6fc] transition-all font-bold">
-                  Edit page
-                </Link>
+                {isAdmin && (
+                  <>
+                    <Link href="/admin" className="text-[#8b949e] hover:text-[#58a6ff] transition-all font-bold">Admin Panel</Link>
+                    <Link href="/settings" className="bg-[#21262d] border border-[#30363d] px-3 py-1.5 rounded-md hover:bg-[#30363d] text-[#f0f6fc] transition-all font-bold">
+                      Edit page
+                    </Link>
+                  </>
+                )}
+                <LogoutButton />
               </>
+            ) : (
+              <Link href="/login" className="bg-[#238636] hover:bg-[#2ea043] text-white px-5 py-1.5 rounded-md font-bold transition-all shadow-md">
+                Sign in
+              </Link>
             )}
-            <LogoutButton />
           </div>
         </div>
       </nav>
 
       <main className="max-w-[1200px] mx-auto pt-16 pb-20 px-8" style={{ fontFamily: settings?.font_family || 'var(--font-inter)' }}>
-        <div className="bg-[#0d1117] border border-[#30363d] rounded-md p-10 mb-10 shadow-sm relative overflow-hidden text-left" style={{ borderLeft: `6px solid ${settings?.primary_color}` }}>
+        <div className="bg-[#0d1117] border border-[#30363d] rounded-md p-10 mb-10 shadow-sm relative overflow-hidden text-left" style={{ borderLeft: `6px solid ${settings?.primary_color || '#30363d'}` }}>
           <h2 className="text-4xl font-bold text-[#f0f6fc] mb-6 tracking-tight">
             Designing with purpose & grace.
           </h2>
@@ -70,18 +73,20 @@ export default async function HomePage() {
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-[#30363d] flex items-center gap-4">
-            <UserAvatar src={profile?.avatar_url} name={profile?.full_name} />
-            <div>
-              <div className="flex items-center gap-2 mb-0.5 text-left">
-                <p className="font-bold text-[#f0f6fc] leading-none">{profile?.full_name}</p>
-                <span className={`text-[9px] border px-1.5 py-0.5 rounded font-bold uppercase ${getRoleStyle(profile?.role)}`}>
-                  {profile?.role}
-                </span>
+          {user && (
+            <div className="mt-12 pt-8 border-t border-[#30363d] flex items-center gap-4">
+              <UserAvatar src={profile?.avatar_url} name={profile?.full_name} />
+              <div>
+                <div className="flex items-center gap-2 mb-0.5 text-left">
+                  <p className="font-bold text-[#f0f6fc] leading-none">{profile?.full_name}</p>
+                  <span className={`text-[9px] border px-1.5 py-0.5 rounded font-bold uppercase ${getRoleStyle(profile?.role)}`}>
+                    {profile?.role}
+                  </span>
+                </div>
+                <p className="text-xs text-[#8b949e] font-medium text-left">Authenticated session</p>
               </div>
-              <p className="text-xs text-[#8b949e] font-medium text-left">Authenticated session</p>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="mt-12">
@@ -115,7 +120,7 @@ export default async function HomePage() {
               </tbody>
             </table>
           </div>
-          <p className="mt-4 text-[11px] text-[#484f58] italic uppercase tracking-widest">
+          <p className="mt-4 text-[11px] text-[#484f58] italic uppercase tracking-widest text-left">
             made with ❤️ by Progjut my beloved - {new Date().getFullYear()}
           </p>
         </div>
