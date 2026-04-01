@@ -21,7 +21,7 @@ export default function ThemeForm({ initialSettings }: { initialSettings: any })
                 <Link href="/" className="text-sm font-bold text-[#58a6ff] hover:underline mb-10 flex items-center gap-2 transition-all">
                     ← Back to dashboard
                 </Link>
-                <h1 className="text-2xl font-bold text-[#f0f6fc] mb-1 tracking-tight">MANUSIA HITAM</h1>
+                <h1 className="text-2xl font-bold text-[#f0f6fc] mb-1 tracking-tight">Edit</h1>
                 <p className="text-sm text-[#8b949e] mb-12 border-b border-[#30363d] pb-4 font-medium">Appearance settings</p>
 
                 <form action="/api/settings/update" method="POST" className="space-y-10">
