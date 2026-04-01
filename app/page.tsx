@@ -35,7 +35,7 @@ export default async function HomePage() {
           <div className="flex gap-6 items-center font-medium">
             {isAdmin && (
               <>
-                <Link href="/admin" className="text-[#8b949e] hover:text-[#58a6ff]">Directory</Link>
+                <Link href="/admin" className="text-[#8b949e] hover:text-[#58a6ff]">Admin Panel</Link>
                 <Link href="/settings" className="bg-[#21262d] border border-[#30363d] px-3 py-1.5 rounded-md hover:bg-[#30363d] text-[#f0f6fc]">
                   Edit page
                 </Link>
