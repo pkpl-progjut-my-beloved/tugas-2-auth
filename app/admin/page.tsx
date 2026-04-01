@@ -17,63 +17,70 @@ export default async function AdminPage() {
     const isSuper = profile?.role === 'SUPER_ADMIN'
 
     return (
-        <div className="min-h-screen bg-[#060606] text-gray-100 p-10 font-sans">
-            <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-end mb-16">
-                    <div>
-                        <Link href="/" className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 hover:text-white transition-all mb-4 block">← return to home</Link>
-                        <h1 className="text-5xl font-black tracking-tighter italic">user management</h1>
-                    </div>
-                    <LogoutButton />
+        <div className="min-h-screen bg-[#0d1117] text-[#c9d1d9]">
+            <nav className="bg-[#161b22] border-b border-[#30363d] px-4 py-3 flex justify-between items-center">
+                <div className="flex items-center gap-4 text-sm">
+                    <Link href="/" className="font-bold text-[#58a6ff]">← Back</Link>
+                    <span className="text-[#8b949e]">/</span>
+                    <span className="font-semibold text-[#f0f6fc]">Users Management</span>
                 </div>
+                <LogoutButton />
+            </nav>
 
-                <div className="bg-[#0f0f0f] rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
-                    <table className="w-full text-left">
-                        <thead className="bg-white/[0.02] text-[10px] uppercase tracking-[0.2em] text-gray-500 font-black border-b border-white/5">
-                            <tr>
-                                <th className="px-10 py-6">identity info</th>
-                                <th className="px-10 py-6 text-center">access level</th>
-                                <th className="px-10 py-6 text-right font-black italic">{isSuper ? 'privileged actions' : 'read only access'}</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/[0.03]">
-                            {allUsers?.map((u) => (
-                                <tr key={u.id} className="group hover:bg-white/[0.01] transition-all">
-                                    <td className="px-10 py-8">
-                                        <div className="font-bold text-white text-lg tracking-tight">{u.full_name}</div>
-                                        <div className="text-sm text-gray-500 font-mono tracking-tighter">{u.email}</div>
-                                    </td>
-                                    <td className="px-10 py-8 text-center">
-                                        <span className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border ${u.role === 'SUPER_ADMIN' ? 'border-purple-500/50 text-purple-400 bg-purple-500/10' :
-                                            u.role === 'ADMIN' ? 'border-blue-500/50 text-blue-400 bg-blue-500/10' : 'border-white/10 text-gray-500'
-                                            }`}>
-                                            {u.role}
-                                        </span>
-                                    </td>
-                                    <td className="px-10 py-8 text-right">
-                                        {isSuper && u.id !== user.id ? (
-                                            <div className="flex justify-end gap-3">
-                                                {u.role !== 'ADMIN' && (
-                                                    <form action="/api/admin/change-role" method="POST">
-                                                        <input type="hidden" name="userId" value={u.id} /><input type="hidden" name="newRole" value="ADMIN" />
-                                                        <button className="text-[10px] uppercase tracking-widest bg-white text-black px-5 py-2.5 rounded-xl font-black hover:scale-105 transition-all">promote to admin</button>
-                                                    </form>
-                                                )}
-                                                {u.role !== 'VIEWER' && (
-                                                    <form action="/api/admin/change-role" method="POST">
-                                                        <input type="hidden" name="userId" value={u.id} /><input type="hidden" name="newRole" value="VIEWER" />
-                                                        <button className="text-[10px] uppercase tracking-widest border border-red-500/30 text-red-500 px-5 py-2.5 rounded-xl font-black hover:bg-red-500/10 transition-all">demote</button>
-                                                    </form>
-                                                )}
-                                            </div>
+            <div className="max-w-5xl mx-auto pt-10 px-4">
+                <div className="bg-[#161b22] border border-[#30363d] rounded-md overflow-hidden">
+                    <div className="bg-[#161b22] border-b border-[#30363d] px-4 py-3 text-xs font-bold text-[#8b949e] uppercase tracking-wider">
+                        Directory Listing
+                    </div>
+                    <div className="divide-y divide-[#30363d]">
+                        {allUsers?.map((u) => (
+                            <div key={u.id} className="flex items-center justify-between px-4 py-4 hover:bg-[#1f242c]">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-md overflow-hidden border border-[#30363d] bg-[#0d1117]">
+                                        {u.avatar_url ? (
+                                            <img src={u.avatar_url} className="w-full h-full object-cover" alt="" />
                                         ) : (
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-700">{u.id === user.id ? 'current session' : 'restricted'}</span>
+                                            <div className="w-full h-full flex items-center justify-center font-bold text-xs">
+                                                {u.full_name?.charAt(0)}
+                                            </div>
                                         )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-bold text-[#f0f6fc]">{u.full_name}</span>
+                                            <span className={`text-[10px] px-2 py-0.5 rounded-full border border-[#30363d] font-semibold ${u.role === 'SUPER_ADMIN' ? 'text-purple-400' :
+                                                u.role === 'ADMIN' ? 'text-blue-400' : 'text-[#8b949e]'
+                                                }`}>
+                                                {u.role.toLowerCase()}
+                                            </span>
+                                        </div>
+                                        <div className="text-xs text-[#8b949e] font-mono">{u.email}</div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                    {isSuper && u.id !== user.id ? (
+                                        <>
+                                            {u.role !== 'ADMIN' && (
+                                                <form action="/api/admin/change-role" method="POST">
+                                                    <input type="hidden" name="userId" value={u.id} /><input type="hidden" name="newRole" value="ADMIN" />
+                                                    <button className="bg-[#21262d] border border-[#30363d] px-3 py-1 rounded-md text-xs font-semibold text-[#f0f6fc] hover:bg-[#30363d]">Promote</button>
+                                                </form>
+                                            )}
+                                            {u.role !== 'VIEWER' && (
+                                                <form action="/api/admin/change-role" method="POST">
+                                                    <input type="hidden" name="userId" value={u.id} /><input type="hidden" name="newRole" value="VIEWER" />
+                                                    <button className="border border-[#30363d] px-3 py-1 rounded-md text-xs font-semibold text-[#f85149] hover:bg-[#f85149] hover:text-white transition-all">Demote</button>
+                                                </form>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <span className="text-xs text-[#484f58] italic uppercase tracking-tighter">{u.id === user.id ? 'Self' : ''}</span>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

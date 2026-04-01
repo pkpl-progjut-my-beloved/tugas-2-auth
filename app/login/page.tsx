@@ -11,21 +11,18 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
-            <div className="w-full max-w-sm text-center">
-                <div className="mb-10">
-                    <div className="inline-block p-6 rounded-[2rem] bg-white/[0.03] border border-white/10 mb-8 shadow-2xl">
-                        <span className="text-5xl">⚡</span>
-                    </div>
-                    <h1 className="text-4xl font-black text-white tracking-tighter mb-3 italic">progjut portal</h1>
-                    <p className="text-gray-500 text-sm font-medium tracking-tight">authenticate to manage global theme settings</p>
+        <div className="h-screen bg-[#0d1117] flex items-center justify-center p-4">
+            <div className="w-full max-w-[340px] border border-[#30363d] bg-[#161b22] p-8 rounded-lg shadow-xl text-center">
+                <div className="mb-6">
+                    <span className="text-4xl">🐙</span>
+                    <h1 className="text-2xl font-semibold text-[#f0f6fc] mt-4 tracking-tight">Welcome</h1>
                 </div>
                 <button
                     onClick={handleLogin}
-                    className="w-full bg-white text-black py-5 rounded-2xl font-black flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl shadow-white/5 uppercase tracking-widest text-xs"
+                    className="w-full bg-[#238636] hover:bg-[#2ea043] text-white py-2.5 rounded-md font-bold text-sm transition-all flex items-center justify-center gap-3 shadow-md"
                 >
-                    <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="google" />
-                    sign in with google
+                    <img src="https://www.google.com/favicon.ico" className="w-4 h-4 bg-white rounded-full p-0.5" alt="google" />
+                    Sign in with Google
                 </button>
             </div>
         </div>
